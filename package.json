@@ -1,8 +1,8 @@
 {
   "name": "BJSL",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "北京三岭基业科技发展有限公司",
-  "main": "./out/main/index.js",
+  "main": "dist/main/index.js",
   "author": "SanLing",
   "homepage": "http://www.bjsl.com.cn/",
   "type": "module",
@@ -12,32 +12,43 @@
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
-    "start": "electron-vite preview",
+    "start": "electron-forge start",
     "dev": "electron-vite dev",
     "build": "npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:win": "npm run build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
-    "build:linux": "npm run build && electron-builder --linux --config"
+    "build:linux": "npm run build && electron-builder --linux --config",
+    "package": "electron-forge package",
+    "make ": "electron-vite build --outDir=dist && electron-forge make",
+    "publish": "electron-forge publish"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
+    "amfe-flexible": "^2.2.1",
+    "autoprefixer": "^10.4.19",
     "axios": "^1.6.5",
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
+    "electron-squirrel-startup": "^1.0.1",
     "electron-store": "8.2.0",
     "electron-updater": "^6.1.7",
     "element-plus": "^2.5.2",
     "js-cookie": "^3.0.5",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
-    "vue-router": "^4.2.5",
     "postcss-pxtorem": "^6.1.0",
-    "amfe-flexible": "^2.2.1",
-    "autoprefixer": "^10.4.19"
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^6.4.2",
+    "@electron-forge/maker-deb": "^6.2.1",
+    "@electron-forge/maker-rpm": "^6.2.1",
+    "@electron-forge/maker-squirrel": "^6.2.1",
+    "@electron-forge/maker-zip": "^6.2.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
+    "@electron-forge/publisher-github": "^6.2.1",
     "@electron-toolkit/eslint-config": "^1.0.2",
     "@electron-toolkit/eslint-config-ts": "^1.0.1",
     "@electron-toolkit/tsconfig": "^1.0.1",
@@ -48,7 +59,6 @@
     "@vue/eslint-config-typescript": "^12.0.0",
     "electron": "^28.1.1",
     "electron-vite": "^2.0.0",
-    "electron-builder": "^24.9.1",
     "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.19.2",
     "prettier": "^3.1.1",
@@ -59,5 +69,46 @@
     "vite": "^5.0.11",
     "vue": "^3.4.5",
     "vue-tsc": "^1.8.27"
+  },
+  "config": {
+    "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "PictureReception",
+            "authors": "History-1024",
+            "description": "An Electron application for picture reception"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ],
+      "publishers": [
+        {
+          "name": "@electron-forge/publisher-github",
+          "config": {
+            "repository": {
+              "owner": "History-1024",
+              "name": "PictureReception"
+            },
+            "prerelease": false,
+            "draft": true
+          }
+        }
+      ]
+    }
   }
 }
