@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ECharts: typeof import('./src/components/ECharts/index.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElDialog: typeof import('element-plus/es')['ElDialog']
     ElEmpty: typeof import('element-plus/es')['ElEmpty']
     ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']

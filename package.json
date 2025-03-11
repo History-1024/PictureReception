@@ -1,5 +1,5 @@
 {
-  "name": "BJSL",
+  "name": "PictureReception",
   "version": "1.0.1",
   "description": "北京三岭基业科技发展有限公司",
   "main": "dist/main/index.js",
@@ -14,14 +14,14 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-forge start",
     "dev": "electron-vite dev",
-    "build": "npm run typecheck && electron-vite build",
+    "build": "npm run typecheck && electron-vite build --outDir=dist",
     "postinstall": "electron-builder install-app-deps",
     "build:win": "npm run build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
     "build:linux": "npm run build && electron-builder --linux --config",
     "package": "electron-forge package",
-    "make ": "electron-vite build --outDir=dist && electron-forge make",
-    "publish": "electron-forge publish"
+    "make": "electron-vite build --outDir=dist && env-cmd electron-forge make",
+    "publish": "env-cmd electron-forge publish"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
@@ -33,7 +33,6 @@
     "echarts": "^5.4.3",
     "electron-squirrel-startup": "^1.0.1",
     "electron-store": "8.2.0",
-    "electron-updater": "^6.1.7",
     "element-plus": "^2.5.2",
     "js-cookie": "^3.0.5",
     "pinia": "^2.1.7",
@@ -58,7 +57,10 @@
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "electron": "^28.1.1",
+    "electron-builder": "^24.9.1",
+    "electron-updater": "^6.3.9",
     "electron-vite": "^2.0.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.56.0",
     "eslint-plugin-vue": "^9.19.2",
     "prettier": "^3.1.1",
@@ -69,46 +71,5 @@
     "vite": "^5.0.11",
     "vue": "^3.4.5",
     "vue-tsc": "^1.8.27"
-  },
-  "config": {
-    "forge": {
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "PictureReception",
-            "authors": "History-1024",
-            "description": "An Electron application for picture reception"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ],
-      "publishers": [
-        {
-          "name": "@electron-forge/publisher-github",
-          "config": {
-            "repository": {
-              "owner": "History-1024",
-              "name": "PictureReception"
-            },
-            "prerelease": false,
-            "draft": true
-          }
-        }
-      ]
-    }
   }
 }

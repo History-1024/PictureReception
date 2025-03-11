@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import {
   // doPostGetImageList,
@@ -7,9 +7,10 @@ import {
   type children_Type,
   doPostSubmitDispose
 } from '@renderer/api/imageList'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, ElProgress } from 'element-plus'
 import dayjs from 'dayjs'
 import { GetImageCountByDateResult_Type } from './type'
+
 defineOptions({
   name: 'ImageList'
 })
@@ -201,9 +202,43 @@ const disposeStatistics = (data) => {
     return 0
   }
 }
+// const updateVisionApp = () => {
+//   // 监听更新事件
+//   window.ElectronApi.updateDownloaded(() => {
+//     ElMessage.success('触发该方法updateDownloaded')
+//   })
+//   window.ElectronApi.downloadProgress((data) => {
+//     ElMessage.success('触发该方法updateDownloaded', data)
+//   })
+// }
+const progress = ref(0)
+const dialog = ref(false)
+const dialogCtrl = ref(true)
+const processDialog = computed(() => {
+  return dialog.value && dialogCtrl.value
+})
+const handleDisplayDialog = () => {
+  dialogCtrl.value = false
+}
+
 onMounted(() => {
   timeDask()
   handleFlush()
+
+  window.ElectronApi.downloadProgress((data) => {
+    if (!dialog.value) dialog.value = true
+    progress.value = Number(data.percent.toFixed(2))
+    // if (data.progress >= 100) {
+    //   dialog.value = false
+    //   ElMessageBox.alert('更新下载完成，是否重启安装？', '提示', {
+    //     type: 'success',
+    //     confirmButtonText: '确认',
+    //     callback: () => {
+    //       window.ElectronApi.restartApp()
+    //     }
+    //   })
+    // }
+  })
 })
 onUnmounted(() => {
   clearInterval(timer.value)
@@ -422,6 +457,21 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
+    <el-dialog v-model="processDialog" :show-close="false" title="" width="500">
+      <template #title>
+        <div style="font-size: 18px">应用更新中</div>
+      </template>
+      <el-progress
+        :text-inside="true"
+        :stroke-width="26"
+        :percentage="progress"
+        :striped-flow="true"
+        :striped="true"
+      />
+      <el-button type="primary" size="small" style="margin-top: 10px" @click="handleDisplayDialog"
+        >隐藏</el-button
+      >
+    </el-dialog>
   </div>
 </template>
 

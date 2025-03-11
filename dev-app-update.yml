@@ -1,3 +1,8 @@
-provider: generic
-url: https://example.com/auto-updates
-updaterCacheDirName: my-app-updater
+version: 1.0.1
+files:
+  - url: BJSL-1.0.1-setup.exe
+    sha512: I918oBkkBMDGrTYID3LXKW6vZm6zTcXzF2pjlk+RzJoYEO/PTm8/JpcSmvFSOkTpEk3ZsSvywJMi/QMU/U+pBw==
+    size: 2094458814
+path: BJSL-1.0.1-setup.exe
+sha512: I918oBkkBMDGrTYID3LXKW6vZm6zTcXzF2pjlk+RzJoYEO/PTm8/JpcSmvFSOkTpEk3ZsSvywJMi/QMU/U+pBw==
+releaseDate: '2025-03-10T03:45:57.324Z'

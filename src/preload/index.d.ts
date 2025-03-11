@@ -19,6 +19,9 @@ declare global {
     getAppToken: (data: { password: string; username: string }) => Promise<Token>
     getStoreToken: () => Promise<Token | null>
     sendAxios<T>(data: { url: string; method: string; data?: object }): Promise<T>
+    downloadProgress(callback: (progressObj) => void): Electron.IpcRenderer
+    updateDownloaded: (callback) => Electron.IpcRenderer
+    restartApp: () => void
   }
   interface Window {
     electron: ElectronAPI

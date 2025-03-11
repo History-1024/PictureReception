@@ -16,6 +16,9 @@ interface CustomerAPI {
   getAppToken(data: { password: string; username: string }): Promise<Token>
   sendAxios<T>(url: string, method: RequestMethods, data?: object): Promise<T>
   // getStoreToken?(): Promise<Token | null>; // 如果需要，取消注释
+  downloadProgress(callback: (progressObj) => void): void
+  updateDownloaded(callback: () => void): void
+  restartApp(): void
 }
 interface WindowMessage {
   url: string
@@ -42,7 +45,16 @@ const customApi: CustomerAPI = {
   //封装一个通用请求函数，将结果返回给渲染进程
   sendAxios: (data) => {
     return ipcRenderer.invoke('getData:sendAxiosGetData', data)
-  }
+  },
+
+  //渲染进程监听更新事件
+  updateDownloaded: (callback) => ipcRenderer.on('update-downloaded', () => callback()),
+  //渲染进程监听更新事件
+  downloadProgress: (callback) =>
+    ipcRenderer.on('update-progress', (_, downloadProgress) => callback(downloadProgress)),
+
+  //主进程监听更新应用请求
+  restartApp: () => ipcRenderer.send('restart-app')
 }
 
 /*

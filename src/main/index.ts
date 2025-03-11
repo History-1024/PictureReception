@@ -1,8 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, Tray, Menu, nativeImage, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-
 import logo from '../../resources/logo.png?asset'
+import { autoUpdater } from 'electron-updater'
 // 导入 createChildWindow 函数
 // import { createChildWindow } from './createChildren'
 // import { getAppToken } from './util/auth'
@@ -11,9 +11,10 @@ import store from './store'
 
 //托盘对象
 let appTray: Tray | null // 创建窗口函数
+let mainWindow: BrowserWindow
 function createWindow(): void {
   // 创建浏览器窗口
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
     show: false,
@@ -113,6 +114,10 @@ app.whenReady().then(() => {
   ipcMain.handle('getData:sendAxiosGetData', async (_event, data) => {
     return await sendAxiosGetData(data)
   })
+  // 监听渲染进程的更新请求
+  ipcMain.handle('restart-app', () => {
+    autoUpdater.quitAndInstall() // 重启应用并安装更新
+  })
   // 为 Windows 设置应用程序用户模型 ID
   electronApp.setAppUserModelId('com.electron')
 
@@ -122,7 +127,6 @@ app.whenReady().then(() => {
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
-
   // 创建窗口
   createWindow()
 
@@ -131,6 +135,75 @@ app.whenReady().then(() => {
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+  try {
+    // const updateUrl = 'https://github.com/History-1024/PictureReception/releases/' // 替换为你的服务器地址
+    autoUpdater.setFeedURL({
+      provider: 'github', // 指定 GitHub 提供者
+      owner: 'History-1024',
+      repo: 'PictureReception',
+      token: process.env.GITHUB_TOKEN
+    })
+    // autoUpdater.autoDownload = true
+    autoUpdater.checkForUpdates()
+    autoUpdater.on('update-available', () => {
+      //有更新直接下载
+      autoUpdater.downloadUpdate()
+      //         // 手动触发下载
+      // try {
+      //   dialog
+      //     .showMessageBox(mainWindow, {
+      //       type: 'info',
+      //       title: '新版本可用',
+      //       message: `发现新版本${info.version}，要下载吗？`,
+      //       buttons: ['是', '否']
+      //     })
+      //     .then((result) => {
+      //       if (result.response === 0) {
+      //         autoUpdater.downloadUpdate()
+      //       }
+      //     })
+      // } catch (error) {
+      //   dialog.showMessageBox(mainWindow, {
+      //     type: 'info',
+      //     title: 'error',
+      //     message: `${error}`
+      //   })
+      // }
+    })
+    autoUpdater.on('download-progress', (progressObj) => {
+      mainWindow.webContents.send('update-progress', progressObj)
+    })
+
+    // 自动退出并安装
+    autoUpdater.on('update-downloaded', (info) => {
+      dialog
+        .showMessageBox(mainWindow, {
+          type: 'info',
+          title: '更新已下载',
+          message: `新版本 ${info.version} 已下载，是否立即安装？`,
+          buttons: ['是', '否']
+        })
+        .then((result) => {
+          if (result.response === 0) {
+            autoUpdater.quitAndInstall()
+          }
+        })
+    })
+    autoUpdater.on('error', (error) => {
+      dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'error',
+        message: `${error}`
+      })
+      console.error('Update error:', error)
+    })
+  } catch (error) {
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      title: 'error',
+      message: `${error}`
+    })
+  }
 })
 
 // 当所有窗口关闭时退出应用程序，但在 macOS 上例外。

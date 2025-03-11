@@ -3,6 +3,7 @@ productName: 电务设备登乘检查图像接收处理系统
 directories:
   buildResources: build
 files:
+  - 'dist/**/*'  # 包含构建输出
   - '!**/.vscode/*'
   - '!src/*'
   - '!electron.vite.config.{js,ts,mjs,cjs}'
@@ -41,5 +42,6 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  repo: PictureReception
+  owner: History-1024
